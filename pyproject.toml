@@ -1,0 +1,13 @@
+[project]
+name = "swarm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.121.1",
+    "google-adk>=1.18.0",
+    "litellm>=1.79.3",
+    "python-dotenv>=1.2.1",
+    "uvicorn>=0.38.0",
+]
