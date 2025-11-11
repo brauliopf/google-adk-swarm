@@ -8,7 +8,7 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
 
-from agent.main import weather_agent
+from agent.agent import weather_agent
 
 
 @asynccontextmanager
@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
         session_service=app.state.session_service
     )
 
-    print("✓ Session service and runner initialized")
+    print("🟢 Session service and runner initialized")
 
     yield
 
@@ -53,14 +53,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ----------- TEST
-
 class AgentWebhookRequest(BaseModel):
     query: str = Field(..., description="User's query to the agent")
     user_id: str = Field(default="anon", description="User ID")
 
 @app.post("/agent-webhook")
-async def handle_agent_webhook(request: AgentWebhookRequest):
+async def _call_agent_async(request: AgentWebhookRequest):
     user_query = request.query # pydantic parses the json by default
     user_id = request.user_id
     session_id = f"session_{user_id}"
@@ -69,10 +67,7 @@ async def handle_agent_webhook(request: AgentWebhookRequest):
     print('READY TO RUN THE AGENT LOGIC: ', user_query)
 
     # Create a proper message Content object
-    message = types.Content(
-        role="user",
-        parts=[types.Part(text=user_query)]
-    )
+    message = types.Content(role="user", parts=[types.Part(text=user_query)])
 
     # Ensure session exists before running
     session_service = app.state.session_service
