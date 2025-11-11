@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
-from agent.agent import weather_agent
+from agent.main import weather_agent
 from api.main import init_api
 
 @asynccontextmanager
