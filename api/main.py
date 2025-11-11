@@ -8,7 +8,7 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
 
-from agent.agent import weather_agent
+from agent.main import weather_agent
 
 
 @asynccontextmanager
@@ -58,7 +58,7 @@ class AgentWebhookRequest(BaseModel):
     user_id: str = Field(default="anon", description="User ID")
 
 @app.post("/agent-webhook")
-async def _call_agent_async(request: AgentWebhookRequest):
+async def call_agent_async(request: AgentWebhookRequest):
     user_query = request.query # pydantic parses the json by default
     user_id = request.user_id
     session_id = f"session_{user_id}"
