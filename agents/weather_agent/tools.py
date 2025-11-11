@@ -1,5 +1,3 @@
-# --- TOOLS ---
-
 # @title Define the get_weather Tool
 def get_weather(city: str) -> dict:
     """Retrieves the current weather report for a specified city.

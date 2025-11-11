@@ -23,10 +23,6 @@ def init_api(lifespan: Optional[Callable] = None) -> FastAPI:
         lifespan=lifespan
     )
     
-    # Include all route modules
-    app.include_router(agent_router)
-    app.include_router(default_router)
-
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],  # Modify this in production to specific origins
@@ -34,5 +30,9 @@ def init_api(lifespan: Optional[Callable] = None) -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Include all route modules
+    app.include_router(agent_router)
+    app.include_router(default_router)
 
     return app
