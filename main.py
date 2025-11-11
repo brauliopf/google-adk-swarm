@@ -1,10 +1,38 @@
-from src.app import root_agent
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from google.adk.sessions import InMemorySessionService
+from google.adk.runners import Runner
+from agent.agent import weather_agent
+from api.main import init_api
 
-def main():
-    print("Hello from swarm!")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Initialize resources
+    print("🚀 Starting up Agents Swarm API...")
 
-    result = root_agent.run("Go to https://www.google.com and search for 'AI engineer code summit NYC'")
-    print(result)
+    # Initialize session service and runner
+    app.state.session_service = InMemorySessionService()
+    app.state.runner = Runner(
+        agent=weather_agent,
+        app_name="agents",
+        session_service=app.state.session_service
+    )
+
+    print("🟢 Session service and runner initialized")
+
+    yield
+
+    # Shutdown: Clean up resources
+    print("🛑 Shutting down Agents Swarm API...")
+
+    # Clean up resources if needed
+    app.state.session_service = None
+    app.state.runner = None
+
+    print("✓ Cleanup completed")
+
+app = init_api(lifespan=lifespan)
 
 if __name__ == "__main__":
-    main()
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
