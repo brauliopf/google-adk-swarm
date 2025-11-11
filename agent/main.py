@@ -18,8 +18,6 @@ warnings.filterwarnings("ignore")
 import logging
 logging.basicConfig(level=logging.ERROR)
 
-print("Libraries imported.")
-
 # --- Define Model Constants for easier use ---
 
 # More supported models can be referenced here: https://ai.google.dev/gemini-api/docs/models#model-variations
@@ -30,8 +28,6 @@ MODEL_GPT_4O = "openai/gpt-4.1" # You can also try: gpt-4.1-mini, gpt-4o etc.
 
 # More supported models can be referenced here: https://docs.litellm.ai/docs/providers/anthropic
 MODEL_CLAUDE_SONNET = "anthropic/claude-sonnet-4-20250514" # You can also try: claude-opus-4-20250514 , claude-3-7-sonnet-20250219 etc
-
-print("\nEnvironment configured.")
 
 # --- TOOLS ---
 
@@ -81,5 +77,3 @@ weather_agent = Agent(
                 "If the tool is successful, present the weather report clearly.",
     tools=[get_weather], # Pass the function directly
 )
-
-print(f"Agent '{weather_agent.name}' created using model '{AGENT_MODEL}'.")
