@@ -8,7 +8,7 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
 
-from agent.main import weather_agent
+from agent.agent import weather_agent
 
 
 @asynccontextmanager
