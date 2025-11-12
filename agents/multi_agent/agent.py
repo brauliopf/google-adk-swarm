@@ -26,7 +26,7 @@ logging.getLogger('asyncio').setLevel(logging.CRITICAL)
 if greeting_agent and farewell_agent and searcher_agent and 'get_weather' in globals():
     AGENT_MODEL = MODEL_GEMINI_2_0_FLASH
 
-    coordinator_agent = Agent(
+    root_agent = Agent(
         name="coordinator_agent",
         model=AGENT_MODEL,
         description="The main coordinator agent. Handles general customer requests and delegates to specialists.",
@@ -34,7 +34,7 @@ if greeting_agent and farewell_agent and searcher_agent and 'get_weather' in glo
         tools=[get_weather],
         sub_agents=[greeting_agent, farewell_agent, searcher_agent]
     )
-    print(f"✅ Agent '{coordinator_agent.name}' created using model '{AGENT_MODEL}'.")
+    print(f"✅ Agent '{root_agent.name}' created using model '{AGENT_MODEL}'.")
 
 else:
     print("❌ Cannot create root agent because one or more sub-agents failed to initialize or 'get_weather' tool is missing.")
@@ -100,10 +100,10 @@ if __name__ == "__main__":
     session_service = InMemorySessionService()
     session = asyncio.run(session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID))
 
-    if 'coordinator_agent' in globals():
-        coordinator_agent = globals()['coordinator_agent']
+    if 'root_agent' in globals():
+        root_agent = globals()['root_agent']
         runner_coordinator = Runner(
-            agent=coordinator_agent,
+            agent=root_agent,
             app_name=APP_NAME,
             session_service=session_service
         )
