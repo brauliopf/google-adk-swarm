@@ -21,19 +21,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent)) # Add path to impor
 
 
 # --- Define the agents ---
-AGENT_MODEL = MODEL_GPT_4O
+AGENT_MODEL = MODEL_GEMINI_2_0_FLASH
 
-weather_agent = Agent(
-    name="weather_agent_v1",
-    model=LiteLlm(model=AGENT_MODEL),
-    description="Provides weather information for specific cities.",
-    instruction="You are a helpful weather assistant. "
-                "When the user asks for the weather in a specific city, "
-                "use the 'get_weather' tool for city weather requests. "
-                "Clearly present successful reports or polite error messages based on the tool's output status.",
-    tools=[get_weather],
+search_agent = Agent(
+    name="search_agent_v1",
+    model=AGENT_MODEL,
+    description="Completes a simple web search query.",
+    instruction="You are a helpful assistant. "
+                "Use the 'google_search' tool to find the information. "
+                "If the tool is successful, present the information clearly.",
+    tools=[google_search],
 )
-print(f"Agent '{weather_agent.name}' created using model '{AGENT_MODEL}'.")
+print(f"Agent '{search_agent.name}' created using model '{AGENT_MODEL}'.")
 
 ########################################################
 # Run the Initial Conversation
@@ -93,18 +92,18 @@ if __name__ == "__main__":
         print(f"Session created: App='{APP_NAME}', User='{USER_ID}', Session='{SESSION_ID}'")
 
         runner = Runner(
-            agent=weather_agent, # The agent we want to run
+            agent=search_agent, # The agent we want to run
             app_name=APP_NAME,   # Associates runs with our app
             session_service=session_service # Uses our session manager
         )
         print(f"Runner created for agent '{runner.agent.name}'.")
         
-        asyncio.run(run_conversation())
+        # asyncio.run(run_conversation())
 
-        # asyncio.run(call_agent_async("who is the dean of the Instituto Tecnológico de Aeronáutica?",
-        #                                runner=runner,
-        #                                user_id=USER_ID,
-        #                                session_id=SESSION_ID))
+        asyncio.run(call_agent_async("who is the dean of the Instituto Tecnológico de Aeronáutica?",
+                                       runner=runner,
+                                       user_id=USER_ID,
+                                       session_id=SESSION_ID))
 
     except Exception as e:
         print(f"An error occurred: {e}")
