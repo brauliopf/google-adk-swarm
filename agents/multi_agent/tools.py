@@ -1,3 +1,27 @@
+from typing import Optional
+
+def say_hello(name: Optional[str] = None) -> str:
+    """Provides a simple greeting. If a name is provided, it will be used.
+
+    Args:
+        name (str, optional): The name of the person to greet. Defaults to a generic greeting if not provided.
+
+    Returns:
+        str: A friendly greeting message.
+    """
+    if name:
+        greeting = f"Hello, {name}!"
+        print(f"--- Tool: say_hello called with name: {name} ---")
+    else:
+        greeting = "Hello there!" # Default greeting if name is None or not explicitly passed
+        print(f"--- Tool: say_hello called without a specific name (name_arg_value: {name}) ---")
+    return greeting
+
+def say_goodbye() -> str:
+    """Provides a simple farewell message to conclude the conversation."""
+    print(f"--- Tool: say_goodbye called ---")
+    return "Goodbye! Have a great day."
+
 def get_weather(city: str) -> dict:
     """Retrieves the current weather report for a specified city.
 
