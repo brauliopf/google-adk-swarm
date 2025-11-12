@@ -24,9 +24,3 @@ def get_weather(city: str) -> dict:
         return mock_weather_db[city_normalized]
     else:
         return {"status": "error", "error_message": f"Sorry, I don't have weather information for '{city}'."}
-
-# Example tool usage (optional test)
-print("\n********** Example tool usage: **********")
-print(get_weather("New York"))
-print(get_weather("Paris"))
-print("********** Example tool usage: **********\n")

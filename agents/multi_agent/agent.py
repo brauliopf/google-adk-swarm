@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, MODEL_CLAUDE_SONNET
 from agents.multi_agent.tools import get_weather
+from google.adk.tools import google_search
 
 # --- Setup development environment ---
 warnings.filterwarnings("ignore") # Ignore all warnings
@@ -22,16 +23,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent)) # Add path to impor
 # --- Define the agents ---
 AGENT_MODEL = MODEL_GEMINI_2_0_FLASH
 
-weather_agent = Agent(
-    name="weather_agent_v1",
+search_agent = Agent(
+    name="search_agent_v1",
     model=AGENT_MODEL,
-    description="Provides weather information for specific cities.",
-    instruction="You are a helpful weather assistant. "
-                "When the user asks for the weather in a specific city, "
-                "use the 'get_weather' tool to find the information. "
-                "If the tool returns an error, inform the user politely. "
-                "If the tool is successful, present the weather report clearly.",
-    tools=[get_weather],
+    description="Completes a simple web search query.",
+    instruction="You are a helpful assistant. "
+                "Use the 'google_search' tool to find the information. "
+                "If the tool is successful, present the information clearly.",
+    tools=[google_search],
 )
 
 ########################################################
@@ -80,7 +79,7 @@ async def run_conversation():
 
 if __name__ == "__main__":
     try:
-        APP_NAME = "weather_tutorial_app"
+        APP_NAME = "search_tutorial_app"
         USER_ID = "user_1"
         SESSION_ID = "session_001" # Using a fixed ID for simplicity
 
@@ -92,13 +91,18 @@ if __name__ == "__main__":
         print(f"Session created: App='{APP_NAME}', User='{USER_ID}', Session='{SESSION_ID}'")
 
         runner = Runner(
-            agent=weather_agent, # The agent we want to run
+            agent=search_agent, # The agent we want to run
             app_name=APP_NAME,   # Associates runs with our app
             session_service=session_service # Uses our session manager
         )
         print(f"Runner created for agent '{runner.agent.name}'.")
         
-        asyncio.run(run_conversation())
+        # asyncio.run(run_conversation())
+
+        asyncio.run(call_agent_async("What is in the headline of the World section of the New York Times today? Use the google_search tool to find the information.",
+                                       runner=runner,
+                                       user_id=USER_ID,
+                                       session_id=SESSION_ID))
 
     except Exception as e:
         print(f"An error occurred: {e}")
