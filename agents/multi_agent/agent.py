@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from agents.config import MODEL_GEMINI_2_0_FLASH
 from agents.multi_agent.tools import get_weather
 from agents.multi_agent.subagents import greeting_agent, farewell_agent, searcher_agent
+from agents.multi_agent.prompts import coordinator_prompt
 
 # --- Setup development environment ---
 warnings.filterwarnings("ignore") # Ignore all warnings
@@ -21,28 +22,19 @@ logging.basicConfig(level=logging.CRITICAL)  # Only show critical errors
 logging.getLogger('asyncio').setLevel(logging.CRITICAL)
 
 
-
 # --- Define the agents ---
 if greeting_agent and farewell_agent and searcher_agent and 'get_weather' in globals():
     AGENT_MODEL = MODEL_GEMINI_2_0_FLASH
 
-    weather_agent_team = Agent(
-        name="weather_agent_team_v2",
+    coordinator_agent = Agent(
+        name="coordinator_agent",
         model=AGENT_MODEL,
-        description="The main coordinator agent. Handles weather requests and delegates greetings/farewells to specialists.",
-        instruction="You are the main Weather Agent coordinating a team. Your primary responsibility is to provide weather information. "
-                    "Use the 'get_weather' tool ONLY for specific weather requests (e.g., 'weather in London'). "
-                    "You have specialized sub-agents: "
-                    "1. 'greeting_agent': Handles simple greetings like 'Hi', 'Hello'. Delegate to it for these. "
-                    "2. 'farewell_agent': Handles simple farewells like 'Bye', 'See you'. Delegate to it for these. "
-                    "3. 'searcher_agent': Handles web searching and information retrieval. Delegate to it for web search requests. "
-                    "Analyze the user's query. If it's a greeting, delegate to 'greeting_agent'. If it's a farewell, delegate to 'farewell_agent'. "
-                    "If it's a weather request, handle it yourself using 'get_weather'. "
-                    "For anything else, respond appropriately or state you cannot handle it.",
+        description="The main coordinator agent. Handles general customer requests and delegates to specialists.",
+        instruction=coordinator_prompt,
         tools=[get_weather],
         sub_agents=[greeting_agent, farewell_agent, searcher_agent]
     )
-    print(f"Agent '{weather_agent_team.name}' created using model '{AGENT_MODEL}'.")
+    print(f"✅ Agent '{coordinator_agent.name}' created using model '{AGENT_MODEL}'.")
 
 else:
     print("❌ Cannot create root agent because one or more sub-agents failed to initialize or 'get_weather' tool is missing.")
@@ -52,27 +44,25 @@ else:
     if 'get_weather' not in globals(): print(" - get_weather function is missing.")
 
 
-########################################################
-# Run a Conversation
-########################################################
-root_agent_var_name = "weather_agent_team"
+# --- Run a Conversation ---
+root_agent_var_name = "coordinator_agent"
 
 async def run_team_conversation(runner):
     print("\n--- Testing Agent Team Delegation ---")
     
     # --- Interactions using await (correct within async def) ---
-    await call_agent_async(query = "Hello there!",
+    await call_agent_async(query = "Quando foi o último jogo do Palmeiras?",
                             runner=runner,
                             user_id=USER_ID,
                             session_id=SESSION_ID)
-    # await call_agent_async(query = "What is the weather in New York?",
+    await call_agent_async(query = "What is the weather in New York?",
+                            runner=runner,
+                            user_id=USER_ID,
+                            session_id=SESSION_ID)
+    # await call_agent_async(query = "Who is the dean of the Instituto Tecnológico de Aeronáutica?",
     #                         runner=runner,
     #                         user_id=USER_ID,
     #                         session_id=SESSION_ID)
-    await call_agent_async(query = "Who is the dean of the Instituto Tecnológico de Aeronáutica?",
-                            runner=runner,
-                            user_id=USER_ID,
-                            session_id=SESSION_ID)
     await call_agent_async(query = "Thanks, bye!",
                             runner=runner,
                             user_id=USER_ID,
@@ -103,37 +93,19 @@ async def call_agent_async(query: str, runner, user_id, session_id):
   print(f"<<< Agent Response: {final_response_text}")
 
 if __name__ == "__main__":
-    try:
+    APP_NAME = "agents_swarm"
+    USER_ID = "user_001"
+    SESSION_ID = "session_001"
 
-        APP_NAME = "weather_tutorial_agent_team"
-        USER_ID = "user_1_agent_team"
-        SESSION_ID = "session_001_agent_team"
+    session_service = InMemorySessionService()
+    session = asyncio.run(session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID))
 
-        session_service = InMemorySessionService()
-
-        # Create the specific session where the conversation will happen
-        session = asyncio.run(session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID))
-        print(f"Session created: App='{APP_NAME}', User='{USER_ID}', Session='{SESSION_ID}'")
-
-        root_agent_var_name = 'root_agent' # Default name from Step 3 guide
-        if 'weather_agent_team' in globals(): # Check if user used this name instead
-            root_agent_var_name = 'weather_agent_team'
-        elif 'root_agent' not in globals():
-            print("⚠️ Root agent ('root_agent' or 'weather_agent_team') not found. Cannot define run_team_conversation.")
-            # Assign a dummy value to prevent NameError later if the code block runs anyway
-            root_agent = None # Or set a flag to prevent execution
-        
-        if root_agent_var_name in globals() and globals()[root_agent_var_name]:
-            root_agent = globals()[root_agent_var_name]
-            runner_root = Runner(
-                agent=root_agent,
-                app_name=APP_NAME,
-                session_service=session_service
-            )
-            print(f"Runner created for agent '{runner_root.agent.name}'.")
-            asyncio.run(run_team_conversation(runner_root))
-        else:
-            print("⚠️ Root agent not found. Cannot run conversation.")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    if 'coordinator_agent' in globals():
+        coordinator_agent = globals()['coordinator_agent']
+        runner_coordinator = Runner(
+            agent=coordinator_agent,
+            app_name=APP_NAME,
+            session_service=session_service
+        )
+        print(f"✅ Runner created for agent '{runner_coordinator.agent.name}'.")
+        asyncio.run(run_team_conversation(runner_coordinator))

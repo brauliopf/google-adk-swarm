@@ -4,6 +4,8 @@ from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, MODEL_CLAUDE_SON
 from agents.multi_agent.tools import say_hello, say_goodbye
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
+from agents.multi_agent.prompts import searcher_prompt
+
 
 # --- Greeting Agent ---
 greeting_agent = None
@@ -41,10 +43,11 @@ except Exception as e:
 
 
 # --- Searcher Agent ---
+searcher_agent = None
 TAVILY_API_KEY = "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"
 
 # Create a function to initialize the MCP toolset to avoid async context issues
-def create_tavily_toolset():
+def tavily_search_tool():
     """Creates a new MCPToolset instance for Tavily search."""
     return MCPToolset(
         connection_params=StreamableHTTPServerParams(
@@ -60,10 +63,29 @@ try:
     searcher_agent = Agent(
         model=LiteLlm(model=MODEL_CLAUDE_SONNET),
         name="searcher_agent",
-        instruction="""Help users get information from the web using the Tavily MCP tool""",
-        description="Handles web searching and information retrieval using the 'tavily_search' tool.", # Crucial for delegation
-        tools=[create_tavily_toolset()],
+        instruction=searcher_prompt,
+        description="Handles web searching and information retrieval using the 'tavily_search_tool'.", # Crucial for delegation
+        tools=[tavily_search_tool()],
     )
     print(f"✅ Agent '{searcher_agent.name}' created using model '{searcher_agent.model}'.")
 except Exception as e:
     print(f"❌ Could not create Searcher agent. Error: {e}")
+
+# --- Scraper Agent ---
+scraper_agent = None
+
+FIRECRAWL_API_KEY = "YOUR_FIRECRAWL_API_KEY"
+
+root_agent = Agent(
+    model="gemini-2.5-pro",
+    name="firecrawl_agent",
+    description="A helpful assistant for scraping websites with Firecrawl",
+    instruction="Help the user search for website content",
+    tools=[
+        MCPToolset(
+            connection_params=StreamableHTTPServerParams(
+                url=f"https://mcp.firecrawl.dev/{FIRECRAWL_API_KEY}/v2/mcp",
+            ),
+        )
+    ],
+)
