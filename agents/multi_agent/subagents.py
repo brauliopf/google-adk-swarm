@@ -1,6 +1,6 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, MODEL_CLAUDE_SONNET
+from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, MODEL_CLAUDE_SONNET, MODEL_GROQ_QWEN3_32B
 from agents.multi_agent.tools import say_hello, say_goodbye
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -28,7 +28,7 @@ except Exception as e:
 farewell_agent = None
 try:
     farewell_agent = Agent(
-        model = LiteLlm(model=MODEL_CLAUDE_SONNET),
+        model = LiteLlm(model=MODEL_GROQ_QWEN3_32B),
         name="farewell_agent",
         instruction="You are the Farewell Agent. Your ONLY task is to provide a polite goodbye message. "
                     "Use the 'say_goodbye' tool when the user indicates they are leaving or ending the conversation "
@@ -61,7 +61,7 @@ def tavily_search_tool():
 searcher_agent = None
 try:
     searcher_agent = Agent(
-        model=LiteLlm(model=MODEL_CLAUDE_SONNET),
+        model=LiteLlm(model=MODEL_GROQ_QWEN3_32B),
         name="searcher_agent",
         instruction=searcher_prompt,
         description="Handles web searching and information retrieval using the 'tavily_search_tool'.", # Crucial for delegation
