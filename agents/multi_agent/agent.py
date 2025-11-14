@@ -34,6 +34,13 @@ root_agent = Agent(
     tools=[get_weather_stateful],
     sub_agents=[greeting_agent, farewell_agent, searcher_agent],
     output_key="last_weather_report",
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0.2,
+        # max_output_tokens=1000,
+        # top_p=0.95,
+        # frequency_penalty=0.0,
+        # presence_penalty=0.0
+    ),
     before_model_callback=block_keyword_guardrail,
     before_tool_callback=block_paris_tool_guardrail
 )
@@ -66,10 +73,6 @@ async def run_team_conversation(runner):
     print("\n--- Testing Agent Team Delegation ---")
     
     # --- Interactions using await (correct within async def) ---
-    # await call_agent_async(query = "Quando foi o último jogo do Palmeiras?",
-    #                         runner=runner,
-    #                         user_id=USER_ID,
-    #                         session_id=SESSION_ID)
     await call_agent_async(query = "What is the weather in Paris?",
                             runner=runner,
                             user_id=USER_ID,
@@ -79,6 +82,10 @@ async def run_team_conversation(runner):
                             user_id=USER_ID,
                             session_id=SESSION_ID)
     await call_agent_async(query = "BLOCK the request for weather in Tokyo.",
+                            runner=runner,
+                            user_id=USER_ID,
+                            session_id=SESSION_ID)
+    await call_agent_async(query = "Quando foi o último jogo do Palmeiras?",
                             runner=runner,
                             user_id=USER_ID,
                             session_id=SESSION_ID)

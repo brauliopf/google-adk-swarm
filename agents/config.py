@@ -17,3 +17,7 @@ MODEL_GEMINI_2_0_FLASH = "gemini-2.0-flash"
 MODEL_GPT_4O = "openai/gpt-4.1" # You can also try: gpt-4.1-mini, gpt-4o etc.
 MODEL_CLAUDE_SONNET = "anthropic/claude-sonnet-4-20250514" # You can also try: claude-opus-4-20250514 , claude-3-7-sonnet-20250219 etc
 MODEL_GROQ_QWEN3_32B = "groq/qwen/qwen3-32b"
+MODEL_GROQ_META_LLAMA_GUARD_4_12B = "groq/meta-llama/llama-guard-4-12b"
+MODEL_GROQ_MOONSHOTAI_KIMI_K2_INSTRUCT_0905 = "groq/moonshotai/kimi-k2-instruct-0905"
+MODEL_GROQ_COMPOUND_MINI = "groq/groq/compound-mini"
+MODEL_GROQ = "groq/openai/gpt-oss-120b"

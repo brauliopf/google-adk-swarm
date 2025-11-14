@@ -1,6 +1,8 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, MODEL_CLAUDE_SONNET, MODEL_GROQ_QWEN3_32B
+from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, \
+    MODEL_CLAUDE_SONNET, MODEL_GROQ_QWEN3_32B, MODEL_GROQ_META_LLAMA_GUARD_4_12B, \
+    MODEL_GROQ_MOONSHOTAI_KIMI_K2_INSTRUCT_0905, MODEL_GROQ_COMPOUND_MINI, MODEL_GROQ
 from agents.multi_agent.tools import say_hello, say_goodbye
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -61,7 +63,7 @@ def tavily_search_tool():
 searcher_agent = None
 try:
     searcher_agent = Agent(
-        model=LiteLlm(model=MODEL_GROQ_QWEN3_32B),
+        model="gemini-2.0-flash",
         name="searcher_agent",
         instruction=searcher_prompt,
         description="Handles web searching and information retrieval using the 'tavily_search_tool'.", # Crucial for delegation
@@ -70,22 +72,3 @@ try:
     print(f"✅ Agent '{searcher_agent.name}' created using model '{searcher_agent.model.model}'.")
 except Exception as e:
     print(f"❌ Could not create Searcher agent. Error: {e}")
-
-# --- Scraper Agent ---
-scraper_agent = None
-
-FIRECRAWL_API_KEY = "YOUR_FIRECRAWL_API_KEY"
-
-root_agent = Agent(
-    model="gemini-2.5-pro",
-    name="firecrawl_agent",
-    description="A helpful assistant for scraping websites with Firecrawl",
-    instruction="Help the user search for website content",
-    tools=[
-        MCPToolset(
-            connection_params=StreamableHTTPServerParams(
-                url=f"https://mcp.firecrawl.dev/{FIRECRAWL_API_KEY}/v2/mcp",
-            ),
-        )
-    ],
-)
