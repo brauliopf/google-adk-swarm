@@ -1,8 +1,6 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, \
-    MODEL_CLAUDE_SONNET, MODEL_GROQ_QWEN3_32B, MODEL_GROQ_META_LLAMA_GUARD_4_12B, \
-    MODEL_GROQ_MOONSHOTAI_KIMI_K2_INSTRUCT_0905, MODEL_GROQ_COMPOUND_MINI, MODEL_GROQ
+from agents.config import MODEL_GEMINI_2_0_FLASH, MODEL_GPT_4O, MODEL_GROQ_QWEN3_32B, MODEL_CLAUDE_SONNET
 from agents.multi_agent.tools import say_hello, say_goodbye
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -13,7 +11,7 @@ from agents.multi_agent.prompts import searcher_prompt
 greeting_agent = None
 try:
     greeting_agent = Agent(
-        model = LiteLlm(model=MODEL_GPT_4O),
+        model = LiteLlm(model=MODEL_GROQ_QWEN3_32B),
         name="greeting_agent",
         instruction="You are the Greeting Agent. Your ONLY task is to provide a friendly greeting to the user. "
                     "Use the 'say_hello' tool to generate the greeting. "
@@ -63,7 +61,7 @@ def tavily_search_tool():
 searcher_agent = None
 try:
     searcher_agent = Agent(
-        model="gemini-2.0-flash",
+        model=MODEL_GEMINI_2_0_FLASH,
         name="searcher_agent",
         instruction=searcher_prompt,
         description="Handles web searching and information retrieval using the 'tavily_search_tool'.", # Crucial for delegation

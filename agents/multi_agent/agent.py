@@ -77,18 +77,18 @@ async def run_team_conversation(runner):
                             runner=runner,
                             user_id=USER_ID,
                             session_id=SESSION_ID)
-    await call_agent_async(query = "What is the weather in London?",
-                            runner=runner,
-                            user_id=USER_ID,
-                            session_id=SESSION_ID)
-    await call_agent_async(query = "BLOCK the request for weather in Tokyo.",
-                            runner=runner,
-                            user_id=USER_ID,
-                            session_id=SESSION_ID)
-    await call_agent_async(query = "Quando foi o último jogo do Palmeiras?",
-                            runner=runner,
-                            user_id=USER_ID,
-                            session_id=SESSION_ID)
+    # await call_agent_async(query = "What is the weather in London?",
+    #                         runner=runner,
+    #                         user_id=USER_ID,
+    #                         session_id=SESSION_ID)
+    # await call_agent_async(query = "BLOCK the request for weather in Tokyo.",
+    #                         runner=runner,
+    #                         user_id=USER_ID,
+    #                         session_id=SESSION_ID)
+    # await call_agent_async(query = "Quando foi o último jogo do Palmeiras?",
+    #                         runner=runner,
+    #                         user_id=USER_ID,
+    #                         session_id=SESSION_ID)
     # await call_agent_async(query = "Who is the dean of the Instituto Tecnológico de Aeronáutica?",
     #                         runner=runner,
     #                         user_id=USER_ID,
@@ -97,6 +97,10 @@ async def run_team_conversation(runner):
                             runner=runner,
                             user_id=USER_ID,
                             session_id=SESSION_ID)
+    await call_agent_async(query = "Thank you for your help. Goodbye!",
+                                runner=runner,
+                                user_id=USER_ID,
+                                session_id=SESSION_ID)
 
 
 if __name__ == "__main__":
