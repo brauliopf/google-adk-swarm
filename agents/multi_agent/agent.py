@@ -23,34 +23,21 @@ warnings.filterwarnings("ignore") # Ignore all warnings
 logging.basicConfig(level=logging.CRITICAL)  # Only show critical errors
 logging.getLogger('asyncio').setLevel(logging.CRITICAL)
 
-run_stateful = True
-
 # --- Define the agents ---
 AGENT_MODEL = MODEL_GPT_4O
 
-if run_stateful:
-    root_agent_stateful = Agent(
-        name="router_agent_stateful",
-        model=LiteLlm(model=AGENT_MODEL),
-        description="The main coordinator agent. Handles general customer requests and delegates to specialists.",
-        instruction=stateful_coordinator_prompt,
-        tools=[get_weather_stateful],
-        sub_agents=[greeting_agent, farewell_agent, searcher_agent],
-        output_key="last_weather_report",
-        before_model_callback=block_keyword_guardrail,
-        before_tool_callback=block_paris_tool_guardrail
-    )
-    print(f"✅ Agent '{root_agent_stateful.name}' created using stateful tool and output_key.")
-else:
-    root_agent = Agent(
-        name="router_agent",
-        model=LiteLlm(model=AGENT_MODEL),
-        description="The main coordinator agent. Handles general customer requests and delegates to specialists.",
-        instruction=coordinator_prompt,
-        tools=[get_weather],
-        sub_agents=[greeting_agent, farewell_agent, searcher_agent]
-    )
-    print(f"✅ Agent '{root_agent.name}' created using model '{AGENT_MODEL}'.")
+root_agent = Agent(
+    name="router_agent_stateful",
+    model=LiteLlm(model=AGENT_MODEL),
+    description="The main coordinator agent. Handles general customer requests and delegates to specialists.",
+    instruction=stateful_coordinator_prompt,
+    tools=[get_weather_stateful],
+    sub_agents=[greeting_agent, farewell_agent, searcher_agent],
+    output_key="last_weather_report",
+    before_model_callback=block_keyword_guardrail,
+    before_tool_callback=block_paris_tool_guardrail
+)
+print(f"✅ Agent '{root_agent.name}' created using stateful tool and output_key.")
 
 # --- Define the agent interaction function ---
 async def call_agent_async(query: str, runner, user_id, session_id):
@@ -106,30 +93,24 @@ async def run_team_conversation(runner):
 
 
 if __name__ == "__main__":
-    if not run_stateful:
-        APP_NAME = "agents"
-        USER_ID = "user_001"
-        SESSION_ID = "session_001"
+    APP_NAME = "agents"
+    USER_ID = "user_001"
+    SESSION_ID = "session_001"
+    initial_state = {
+    }
+
+    session_service = InMemorySessionService()
+    session = asyncio.run(session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID, state=initial_state if initial_state else None))
+
+    print("\n--- Initial Session State ---")
+    if session:
+        print(f"Session state: {session.state}")
     else:
-        APP_NAME = "agents_stateful"
-        USER_ID = "user_state_demo_1"
-        SESSION_ID = "session_state_demo_001"
-        initial_state = {
-            "user_preference_temperature_unit": "Fahrenheit",
-        }
-
-        session_service = InMemorySessionService()
-        session = asyncio.run(session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID, state=initial_state if run_stateful else None))
-
-        print("\n--- Initial Session State ---")
-        if session:
-            print(f"Session state (is stateful: {run_stateful}): {session.state}")
-        else:
-            print("Error: Could not retrieve session.")
+        print("Error: Could not retrieve session.")
 
     # Create the runner using the appropriate session service
-    if 'root_agent' in globals() or 'root_agent_stateful' in globals():
-        root_agent = globals()['root_agent'] if 'root_agent' in globals() else globals()['root_agent_stateful']
+    if 'root_agent' in globals():
+        root_agent = globals()['root_agent']
         runner_coordinator = Runner(
             agent=root_agent,
             app_name=APP_NAME,

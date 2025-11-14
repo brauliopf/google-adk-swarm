@@ -20,7 +20,7 @@ try:
         description="Handles simple greetings and hellos using the 'say_hello' tool.", # Crucial for delegation
         tools=[say_hello],
     )
-    print(f"✅ Agent '{greeting_agent.name}' created using model '{greeting_agent.model}'.")
+    print(f"✅ Agent '{greeting_agent.name}' created using model '{greeting_agent.model.model}'.")
 except Exception as e:
     print(f"❌ Could not create Greeting agent. Check API Key ({greeting_agent.model}). Error: {e}")
 
@@ -37,7 +37,7 @@ try:
         description="Handles simple farewells and goodbyes using the 'say_goodbye' tool.", # Crucial for delegation
         tools=[say_goodbye],
     )
-    print(f"✅ Agent '{farewell_agent.name}' created using model '{farewell_agent.model}'.")
+    print(f"✅ Agent '{farewell_agent.name}' created using model '{farewell_agent.model.model}'.")
 except Exception as e:
     print(f"❌ Could not create Farewell agent. Check API Key ({farewell_agent.model}). Error: {e}")
 
@@ -67,7 +67,7 @@ try:
         description="Handles web searching and information retrieval using the 'tavily_search_tool'.", # Crucial for delegation
         tools=[tavily_search_tool()],
     )
-    print(f"✅ Agent '{searcher_agent.name}' created using model '{searcher_agent.model}'.")
+    print(f"✅ Agent '{searcher_agent.name}' created using model '{searcher_agent.model.model}'.")
 except Exception as e:
     print(f"❌ Could not create Searcher agent. Error: {e}")
 

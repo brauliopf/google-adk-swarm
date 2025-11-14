@@ -92,5 +92,3 @@ def block_paris_tool_guardrail(
     # If the checks above didn't return a dictionary, allow the tool to execute
     print(f"--- Callback: Allowing tool '{tool_name}' to proceed. ---")
     return None # Returning None allows the actual tool function to run
-
-print("✅ block_paris_tool_guardrail function defined.")

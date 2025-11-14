@@ -95,4 +95,10 @@ def get_weather_stateful(city: str, tool_context: ToolContext) -> dict:
         print(f"--- Tool: City '{city}' not found. ---")
         return {"status": "error", "error_message": error_msg}
 
-print("✅ State-aware 'get_weather_stateful' tool defined.")
+# Get list of all defined functions in this module
+import inspect
+_current_module = inspect.getmodule(inspect.currentframe())
+_defined_functions = [name for name, obj in inspect.getmembers(_current_module, inspect.isfunction)
+                      if obj.__module__ == __name__]
+
+print(f"✅ Tools defined in this module: {', '.join(_defined_functions)}")
