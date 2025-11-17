@@ -21,7 +21,7 @@ def block_paris_tool_guardrail(
     print(f"--- Callback: Inspecting args: {args} ---")
 
     # --- Guardrail Logic ---
-    target_tool_name = "get_weather_stateful" # Match the function name used by FunctionTool
+    target_tool_name = "get_weather" # Match the function name used by FunctionTool
     blocked_city = "paris"
 
     # Check if it's the correct tool and the city argument matches the blocked city

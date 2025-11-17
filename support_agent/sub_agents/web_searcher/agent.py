@@ -1,11 +1,13 @@
 from google.adk.agents.llm_agent import Agent
-from shared_libraries.constants import MODEL_GEMINI_2_0_FLASH
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
-from support_agent.sub_agents.web_searcher.prompt import SEARCH_RESULT_AGENT_PROMPT
+from support_agent.sub_agents.web_searcher.prompt import WEB_SEARCHER_AGENT_PROMPT
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-web_searcher_agent = None
-TAVILY_API_KEY = "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"
+root_agent = None
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 # Create a function to initialize the MCP toolset to avoid async context issues
 def tavily_search_tool():
@@ -20,13 +22,14 @@ def tavily_search_tool():
     )
 
 try:
-    web_searcher_agent = Agent(
-        model=MODEL_GEMINI_2_0_FLASH,
+    root_agent = Agent(
+        model=os.getenv("MODEL_GEMINI_2_0_FLASH"),
         name="web_searcher_agent",
-        instruction=SEARCH_RESULT_AGENT_PROMPT,
+        instruction=WEB_SEARCHER_AGENT_PROMPT,
         description="Handles web searching and information retrieval using the 'tavily_search_tool'.", # Crucial for delegation
         tools=[tavily_search_tool()],
+        output_key="web_searcher_response",
     )
-    print(f"✅ Agent '{web_searcher_agent.name}' created using model '{web_searcher_agent.model.model}'.")
+    print(f"✅ Agent '{root_agent.name}' created using model '{root_agent.model.model}'.")
 except Exception as e:
     print(f"❌ Could not create Searcher agent. Error: {e}")
