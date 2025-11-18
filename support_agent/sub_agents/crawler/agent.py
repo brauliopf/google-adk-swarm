@@ -7,15 +7,14 @@ from selenium.webdriver.chrome.options import Options
 from . import prompt
 from pydantic import BaseModel, Field
 import os
-import json
-import numpy as np
-import google.generativeai as genai
 from dotenv import load_dotenv
 load_dotenv()
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
 DISABLE_WEB_DRIVER = int(os.getenv("DISABLE_WEB_DRIVER", "0"))
+
+driver = None
 
 if not DISABLE_WEB_DRIVER:
     options = Options()
@@ -24,7 +23,6 @@ if not DISABLE_WEB_DRIVER:
     options.add_argument("user-data-dir=/tmp/selenium")
 
     driver = selenium.webdriver.Chrome(options=options)
-
 
 def go_to_url(url: str) -> str:
     """Navigates the browser to the given URL."""
@@ -73,9 +71,9 @@ class CrawlerResponse(BaseModel):
 root_agent = Agent(
     model=os.getenv("MODEL_GEMINI_2_0_FLASH"),
     name="crawler_agent",
-    description="Crawl a specific website and gather information from it",
-    instruction=prompt.CRAWLER_AGENT_PROMPT,
-    output_schema=CrawlerResponse,
+    description="Resourceful assistant that reviews websites and summarizes or reasons about their content give a URL.",
+    instruction=prompt.CRAWLER_INSTRUCTION,
+    # output_schema=CrawlerResponse,
     tools=[
         go_to_url,
         get_page_text,

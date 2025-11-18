@@ -26,7 +26,7 @@ try:
         model=os.getenv("MODEL_GEMINI_2_0_FLASH"),
         name="web_searcher_agent",
         instruction=WEB_SEARCHER_AGENT_PROMPT,
-        description="Handles web searching and information retrieval using the 'tavily_search_tool'.", # Crucial for delegation
+        description="Resourceful assistant that performs web searching and information retrieval.",
         tools=[tavily_search_tool()],
         output_key="web_searcher_response",
     )

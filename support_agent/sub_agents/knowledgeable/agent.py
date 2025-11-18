@@ -1,4 +1,5 @@
 from google.adk.agents.llm_agent import Agent
+from google.genai import types
 from . import prompt
 import os
 import json
@@ -72,7 +73,7 @@ def cosine_similarity(vec1: np.ndarray, vec2: np.ndarray) -> float:
     return dot_product / (norm1 * norm2)
 
 
-def query_knowledge_base(query: str, top_k: int = 3) -> list[dict]:
+def query_knowledge_base(query: str, top_k: int = 2) -> list[dict]:
     """
     Query the knowledge base using semantic search with embeddings.
 
@@ -117,12 +118,13 @@ def query_knowledge_base(query: str, top_k: int = 3) -> list[dict]:
 
 
 root_agent = Agent(
-    model=os.getenv("MODEL_GEMINI_2_0_FLASH"),
     name="knowledgeable_agent",
-    description="Queries the knowledge base and returns the most relevant information.",
-    instruction=prompt.RETRIEVER_PROMPT,
-    tools=[
-        query_knowledge_base,
-    ],
+    model=os.getenv("MODEL_GEMINI_2_0_FLASH"),
+    description="Helpful assistant that can answer questions about InfinitePay's products and services.",
+    instruction=prompt.RETRIEVER_INSTRUCTION,
+    tools=[query_knowledge_base],
     output_key="knowledgeable_response",
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0.2,
+    )
 )
