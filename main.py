@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
-from agents.multi_agent.agent import root_agent_stateful as root_agent
+from support_agent.agent import root_agent
 from api.main import init_api
 
 @asynccontextmanager
@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
     app.state.session_service = InMemorySessionService()
     app.state.runner = Runner(
         agent=root_agent,
-        app_name="agents",
+        app_name="support_agent",
         session_service=app.state.session_service
     )
 

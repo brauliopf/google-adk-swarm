@@ -30,20 +30,18 @@ if not DISABLE_WEB_DRIVER:
 
 def go_to_url(url: str) -> str:
     """Navigates the browser to the given URL."""
-    print(f"🌐 Navigating to URL: {url}")  # Added print statement
     driver.get(url.strip())
     return f"Navigated to URL: {url}"
 
 def get_page_source() -> str:
-    LIMIT = 4000000
     """Returns the current page source."""
-    print("📄 Getting page source...")  # Added print statement
+    LIMIT = 4000000
     return driver.page_source[0:LIMIT]
 
 def get_page_text() -> str:
     """Returns the text content of the current page after excluding unwanted tags."""
     page_source = get_page_source()
-    
+
     soup = BeautifulSoup(page_source, 'html.parser')
 
     # Remove unwanted tags
@@ -52,16 +50,18 @@ def get_page_text() -> str:
         for element in soup.find_all(tag):
             element.decompose()
 
-    # Return cleaned text
-    return soup.get_text(separator=' ', strip=True)
+    # Get cleaned text
+    text = soup.get_text(separator=' ', strip=True)
+
+    # Escape quotation marks to prevent JSON parsing issues
+    text = text.replace('"', '\\"')
+
+    return text
 
 def extract_structured_content(
     page_text: str, user_task: str, tool_context: ToolContext
 ) -> str:
     """Analyzes the webpage text content and extracts relevant content."""
-    print(
-        "🤔 Analyzing webpage text content and extracting relevant content..."
-    )  # Added print statement
 
     analysis_prompt = prompt.ANALYSIS_PROMPT.format(**{'page_text':page_text, 'user_task':user_task})
 
