@@ -2,16 +2,14 @@ import warnings
 import selenium
 from bs4 import BeautifulSoup
 from google.adk.agents.llm_agent import Agent
-from google.adk.models.lite_llm import LiteLlm
-from google.adk.tools.load_artifacts_tool import load_artifacts_tool
 from google.adk.tools.tool_context import ToolContext
-from google.genai import types
-from PIL import Image
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 from . import prompt
-
+from pydantic import BaseModel, Field
 import os
+import json
+import numpy as np
+import google.generativeai as genai
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -68,15 +66,19 @@ def extract_structured_content(
     return analysis_prompt
 
 
+class CrawlerResponse(BaseModel):
+    source: str = Field(description="The URL of the page that was crawled.")
+    content: str = Field(description="The text content of the page to the user using a markdown format. Use metadata to describe unstructured content.")
+
 root_agent = Agent(
     model=os.getenv("MODEL_GEMINI_2_0_FLASH"),
     name="crawler_agent",
     description="Crawl a specific website and gather information from it",
     instruction=prompt.CRAWLER_AGENT_PROMPT,
+    output_schema=CrawlerResponse,
     tools=[
         go_to_url,
         get_page_text,
-        extract_structured_content
     ],
     output_key="crawler_response",
 )
