@@ -27,9 +27,6 @@ async def call_agent_async(
     user_id = webhook_request.user_id
     session_id = f"session_{user_id}"
 
-    # Run agent logic
-    print('READY TO RUN THE AGENT LOGIC: ', user_query)
-
     # Create a proper message Content object
     message = types.Content(role="user", parts=[types.Part(text=user_query)])
 
