@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from google.adk.agents.llm_agent import Agent
 from google.adk.tools.tool_context import ToolContext
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from . import prompt
 from pydantic import BaseModel, Field
 import os
@@ -12,17 +13,23 @@ load_dotenv()
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-DISABLE_WEB_DRIVER = int(os.getenv("DISABLE_WEB_DRIVER", "0"))
+ACTIVATE_WEB_DRIVER = int(os.getenv("ACTIVATE_WEB_DRIVER", "0"))
 
 driver = None
 
-if not DISABLE_WEB_DRIVER:
+if ACTIVATE_WEB_DRIVER:
     options = Options()
+    options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--verbose")
     options.add_argument("user-data-dir=/tmp/selenium")
 
-    driver = selenium.webdriver.Chrome(options=options)
+    service = Service(os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
+    driver = selenium.webdriver.Chrome(service=service, options=options)
 
 def go_to_url(url: str) -> str:
     """Navigates the browser to the given URL."""

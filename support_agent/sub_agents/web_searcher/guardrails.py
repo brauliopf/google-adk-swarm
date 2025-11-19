@@ -49,7 +49,7 @@ Message: {model_response_text}"""
             return LlmResponse(
                 content=types.Content(
                     role="model",
-                    parts=[types.Part(text="I cannot process this request because it mentions Palmeiras losing a game.")],
+                    parts=[types.Part(text="Não posso processar esta solicitação porque menciona a Palmeiras perdendo um jogo.")],
                 )
             )
 

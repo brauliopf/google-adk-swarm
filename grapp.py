@@ -15,14 +15,26 @@ def chat(message, history, user_id):
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}"
 
-with gr.Blocks(title="Agent Chat") as demo:
+custom_css = """
+.gradio-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background-color: #e0e5e8 !important;
+}
+"""
+
+with gr.Blocks(title="Agent Chat", css=custom_css, theme=gr.themes.Default(primary_hue="slate").set(body_background_fill="#f0f0f0")) as demo:
     gr.Markdown("# Agent Chat Interface")
 
     user_id = gr.Textbox(label="User ID", value="anon", placeholder="Enter your user ID")
     chatbot = gr.ChatInterface(
         fn=chat,
         type="messages",
-        additional_inputs=[user_id]
+        additional_inputs=[user_id],
+        chatbot=gr.Chatbot(height=600)
     )
 
 # https://www.gradio.app/guides/quickstart
