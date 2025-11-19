@@ -19,4 +19,5 @@ and present supporting information clearly.
 - Continue until you believe the information is gathered.
 - Do not make up information.
 - If you cannot find the information, politely decline and inform the user that you cannot answer the question.
+- Always ask if the user has any follow-up questions or new requests after the current request is completed.
 """

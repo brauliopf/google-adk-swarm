@@ -15,31 +15,39 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 ACTIVATE_WEB_DRIVER = int(os.getenv("ACTIVATE_WEB_DRIVER", "0"))
 
-driver = None
+_driver = None
 
-if ACTIVATE_WEB_DRIVER:
-    options = Options()
-    options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920x1080")
-    options.add_argument("--verbose")
-    options.add_argument("user-data-dir=/tmp/selenium")
+def get_driver():
+    """Lazy initialization of the WebDriver. Only creates driver when first needed."""
+    global _driver
+    if _driver is None:
+        if not ACTIVATE_WEB_DRIVER:
+            raise RuntimeError("WebDriver is not activated. Set ACTIVATE_WEB_DRIVER=1 to enable.")
 
-    service = Service(os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
-    driver = selenium.webdriver.Chrome(service=service, options=options)
+        options = Options()
+        options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920x1080")
+        options.add_argument("--verbose")
+        options.add_argument("user-data-dir=/tmp/selenium")
+
+        service = Service(os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
+        _driver = selenium.webdriver.Chrome(service=service, options=options)
+
+    return _driver
 
 def go_to_url(url: str) -> str:
     """Navigates the browser to the given URL."""
-    driver.get(url.strip())
+    get_driver().get(url.strip())
     return f"Navigated to URL: {url}"
 
 def get_page_source() -> str:
     """Returns the current page source."""
     LIMIT = 4000000
-    return driver.page_source[0:LIMIT]
+    return get_driver().page_source[0:LIMIT]
 
 def get_page_text() -> str:
     """Returns the text content of the current page after excluding unwanted tags."""

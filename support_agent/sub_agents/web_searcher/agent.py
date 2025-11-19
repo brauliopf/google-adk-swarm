@@ -24,7 +24,7 @@ def tavily_search_tool():
 
 try:
     root_agent = Agent(
-        model=os.getenv("MODEL_GEMINI_2_0_FLASH"),
+        model="gemini-2.5-pro",
         name="web_searcher_agent",
         instruction=WEB_SEARCHER_AGENT_PROMPT,
         description="Resourceful assistant that performs web searching and information retrieval.",
