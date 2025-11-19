@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+gradio
+requests
+google-adk
+python-dotenv
+google-genai
+google-generativeai
+selenium
+beautifulsoup4
+pydantic

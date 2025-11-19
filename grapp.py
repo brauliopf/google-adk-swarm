@@ -1,7 +1,8 @@
 import gradio as gr
 import requests
+import os
 
-API_URL = "http://localhost:8000/api/v1/agent-webhook"
+API_URL = os.getenv("API_URL", "http://localhost:8000/api/v1/agent-webhook")
 
 def chat(message, history, user_id):
     try:
@@ -19,8 +20,14 @@ with gr.Blocks(title="Agent Chat") as demo:
 
     user_id = gr.Textbox(label="User ID", value="anon", placeholder="Enter your user ID")
     chatbot = gr.ChatInterface(
-        fn=lambda msg, history: chat(msg, history, user_id.value),
-        type="messages"
+        fn=chat,
+        type="messages",
+        additional_inputs=[user_id]
     )
 
-demo.launch()
+# https://www.gradio.app/guides/quickstart
+demo.launch(
+    server_name=os.getenv("GRADIO_SERVER_NAME", "127.0.0.1"),
+    server_port=int(os.getenv("GRADIO_SERVER_PORT", "7860")),
+    # share=True
+)
